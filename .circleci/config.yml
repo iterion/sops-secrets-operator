@@ -99,6 +99,7 @@ jobs:
       - run:
           name: setup helm and install tiller
           command: |
+            export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
             # install helm
             curl -sSL https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz | tar -xzvf - linux-amd64/helm
             chmod +x linux-amd64/helm
@@ -126,6 +127,7 @@ jobs:
       - run:
           name: Run Local Tests
           command: |
+            export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
             export GNUPGHOME="$(mktemp -d)"
             cat >$GNUPGHOME/foo <<EOF
                 %echo Generating a basic OpenPGP key
@@ -174,5 +176,6 @@ jobs:
       - run:
           name: Run Tests
           command: |
+            export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
             export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
             make test
