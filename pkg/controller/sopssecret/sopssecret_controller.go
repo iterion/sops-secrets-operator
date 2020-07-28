@@ -191,6 +191,7 @@ func decryptSopsSecretInstance(
 		return nil, err
 	}
 
+	reqLogger.Info(string(reqBodyBytes))
 	decryptedInstanceBytes, err := customDecryptData(reqBodyBytes, "json")
 	if err != nil {
 		reqLogger.Info("Failed to Decrypt encrypted sops secret instance.")
@@ -316,17 +317,20 @@ func customDecryptData(data []byte, format string) (cleartext []byte, err error)
 	default:
 		store = &sopsjson.BinaryStore{}
 	}
+	log.Info("Loading file")
 	// Load SOPS file and access the data key
 	tree, err := store.LoadEncryptedFile(data)
 	if err != nil {
 		return nil, err
 	}
+	log.Info("Getting data key")
 	key, err := tree.Metadata.GetDataKey()
 	if err != nil {
 		return nil, err
 	}
 
 	// Decrypt the tree
+	log.Info("Decrypting tree")
 	cipher := sopsaes.NewCipher()
 	_, err = tree.Decrypt(key, cipher)
 	if err != nil {
